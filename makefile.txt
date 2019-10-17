@@ -1,0 +1,2 @@
+all:
+	g++ main_points.cpp Point.cpp Group.cpp Plane.cpp Cluster.cpp ClusterFinder.cpp Control.cpp Interface.cpp -o main

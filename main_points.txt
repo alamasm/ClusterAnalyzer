@@ -1,0 +1,115 @@
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <random>
+#include <cmath>
+
+using namespace std;
+
+class Point
+{
+    public:
+    double x, y;
+    Point(double x, double y) {
+        this->x = x;
+        this->y = y;
+    }
+};
+
+vector<double> get_random_normal_vector(int n, double min, double max);
+void print_points(vector<Point> points, ofstream &out, int group);
+
+
+class Cloud
+{
+    public:
+    vector<Point> points;
+    Cloud(vector<Point> points) {
+        this->points = points;
+    }
+};
+
+class Plane
+{
+    public:
+    vector<Cloud> clouds;
+    vector<Point> points;
+};
+
+class Group
+{
+    public:
+    vector<Point> points;
+    double x_center;
+    double y_center;
+    double x_dispersion;
+    double y_dispersion;
+    Group(int n, double x_center, double y_center, double x_dispersion, float y_dispersion) {
+        this->x_center = x_center;
+        this->y_center = y_center;
+        this->x_dispersion = x_dispersion;
+        this->y_dispersion = y_dispersion;
+        vector<double> xs = get_random_normal_vector(n, -x_dispersion, x_dispersion);
+        vector<double> ys = get_random_normal_vector(n, -y_dispersion, y_dispersion);
+        for (int i = 0; i < n; ++i) {
+            points.push_back(Point(x_center + xs[i], y_center + ys[n - i - 1]));
+        }
+    }
+
+    void rotate_relatively_to_center(double alpha) {
+        double old_x;
+        for (int i = 0; i < points.size(); ++i) {
+            old_x = points[i].x;
+            points[i].x = (old_x - x_center) * cos(alpha) - (points[i].y - y_center) * sin(alpha) + x_center;
+            points[i].y = (old_x - x_center) * sin(alpha) + (points[i].y - y_center) * cos(alpha) + y_center;
+        }
+    }
+
+    void rotate_relatively_to_origin(double alpha) {
+        double old_x;
+        for (int i = 0; i < points.size(); ++i) {
+            old_x = points[i].x;
+            points[i].x = old_x * cos(alpha) - points[i].y * sin(alpha);
+            points[i].y = old_x * sin(alpha) + points[i].y * cos(alpha);
+        }
+    }
+
+    void scale(double x_scale, double y_scale) {
+
+    }
+};
+
+int main() {
+    Group g1(1000, 50, -50, 50, 200);
+    Group g2(1000, 0, 0, 50, 200);
+    Group g3(1000, 50, 0, 50, 200);
+    Group g4(1000, 25, -10, 50, 50);
+    g1.rotate_relatively_to_center(M_PI / (double) 2);
+    g3.rotate_relatively_to_center(M_PI / (double) 4);
+    ofstream out;
+    out.open("points.txt");
+    print_points(g1.points, out, 0);
+    print_points(g2.points, out, 1);
+    print_points(g3.points, out, 2);
+    print_points(g4.points, out, 3);
+}
+
+vector<double> get_random_normal_vector(int n, double min, double max) {
+    vector<double> res(n);
+    uniform_real_distribution<double> unif(min,max);
+    default_random_engine re;
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < 100; ++j) {
+            res[i] += unif(re);
+        }
+        res[i] /= 100;
+    }
+    return res;
+}
+
+void print_points(vector<Point> points, ofstream &out, int group) {
+    for (auto p : points) {
+        out << p.x << " " << p.y << " " << group << endl;
+    }
+}
