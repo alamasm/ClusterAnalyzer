@@ -168,15 +168,7 @@ void ClusterFinder::copy_clusters(vector<Cluster>& from, vector<Cluster>& to) {
 vector<Cluster> ClusterFinder::find_clusters_with_spanning_tree_algorithm(vector<Point> points) {
     vector<Cluster> clusters;
     vector<vector<double>> distances_matrix = spanning_tree(points).first;
-    /*
-    double min_d;
-    double min_i;
-    double min_j;
-    for (int i = 0; i < points.size(); ++i) {
-        for (int j = i + 1; j < points.size(); ++j) {
-
-        }
-    }*/
+    
     return clusters;
 }
 
