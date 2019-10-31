@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #ifndef control_include
 #define control_include
 #include "Control.h"
@@ -13,6 +14,14 @@ class Interface
     Control control;
     ifstream input;
     ofstream out;
+    ofstream log_out;
+    int points_saved = 0;
     int from_file = 0;
     void parse();
+    void print_points(ofstream &out, vector<Point> points, int group);
+    void print_clusters(ofstream& out, vector<Cluster> clusters);
+    void print_result(ofstream &out);
+    void print_spanning_tree(ofstream &out, pair<vector<vector<double>>, vector<Point>> g);
+    void log(string s);
+    vector<Group> get_groups_from_file(ifstream &in);
 };

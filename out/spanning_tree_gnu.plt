@@ -1,0 +1,1 @@
+plot for [j=0:400] 'spanning_tree.txt' index j u 1:2 with lines

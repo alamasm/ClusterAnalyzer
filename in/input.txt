@@ -1,15 +1,9 @@
-create_group 1000 50 -50 50 200
-create_group 1000 0 0 50 200
-create_group 1000 50 0 50 200
-create_group 1000 25 -10 50 50
-rotate_center 0 1.57
-rotate_center 2 0.79
-find_clusters 0 5
-print_clusters clusters_wave_5.txt
-find_clusters 0 1
-print_clusters clusters_wave_1.txt
-find_clusters 0 50
-print_clusters clusters_wave_50.txt
-find_clusters 0 10
-print_clusters clusters_wave_10.txt
+//create_group 100 50 -50 50 200
+//create_group 100 0 0 50 200
+//create_group 100 50 0 50 200
+//create_group 100 25 -10 50 50
+//rotate_center 0 1.57
+//rotate_center 2 0.79
+read_points -1
+print_spanning_tree spanning_tree.txt
 end

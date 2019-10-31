@@ -146,11 +146,6 @@ double ClusterFinder::k_means(long unsigned k, vector<Cluster>& clusters, vector
             mu += cluster_centers[i].distance(cluster_centers[j]);
        }
     }
-    /*
-    cout << "CENTERS:" << endl;
-    for (long unsigned i = 0; i < k; ++i) {
-        cout << cluster_centers[i].x << " " << cluster_centers[i].y << endl;
-    }*/
     return mu;
 }
 
@@ -166,56 +161,42 @@ void ClusterFinder::copy_clusters(vector<Cluster>& from, vector<Cluster>& to) {
 }
 
 vector<Cluster> ClusterFinder::find_clusters_with_spanning_tree_algorithm(vector<Point> points) {
-    vector<Cluster> clusters;
-    vector<vector<double>> distances_matrix = spanning_tree(points).first;
-    /*
-    double min_d;
-    double min_i;
-    double min_j;
-    for (int i = 0; i < points.size(); ++i) {
-        for (int j = i + 1; j < points.size(); ++j) {
-
-        }
-    }*/
-    return clusters;
-}
-
-pair<vector<vector<double>>, vector<Point>> ClusterFinder::spanning_tree(vector<Point> points) {
-    vector<vector<double>> graph(points.size());
+    vector<Cluster> clusters;/*
+    vector<vector<double>> distances_matrix(points.size());
     for (size_t i = 0; i < points.size(); ++i) {
-        graph[i].resize(points.size());
-        for (size_t j = 0; j < points.size(); ++j) {
-            graph[i][j] = -1;
+        distances_matrix[i].resize(points.size());
+        for (size_t j = i; j < points.size(); ++j) {
+            distances_matrix[i][j] = -1;
+            distances_matrix[j][i] = -1;
         }
-        graph[i][i] = 0;
     }
-    vector<int> cur_points;
-    cur_points.push_back(0);
+    vector<Point> cur_points;
+    cur_points.push_back(points[0]);
     set<int> used;
-    used.insert(0);
     double min_d;
-    size_t min_i = 0, min_j = 0, last_i = 0;
+    int min_i, min_j;
 
-    while (used.size() < points.size()){
-        if (used.size()%100 == 0) cout << used.size() << endl;
+    for (size_t i = 0; i < points.size(); ++i) {
+        if (used.count(i) != 0) continue;
         min_d = 1e9;
         for (size_t j = 0; j < cur_points.size(); ++j) {
             for (size_t k = 0; k < points.size(); ++k) {
-                if (used.count(k) == 0) {
-                    if (points[cur_points[j]].distance(points[k]) < min_d) {
-                        min_d = points[cur_points[j]].distance(points[k]);
+                if (k != j && k != i && used.count(k) == 0) {
+                    if (cur_points[j].distance(points[k]) < min_d) {
+                        min_d = cur_points[j].distance(points[k]);
                         min_i = k;
-                        min_j = cur_points[j];
+                        min_j = j;
                     }
                 }
             }
         }
-        cur_points.push_back(min_i);
-        
+        cur_points.push_back(points[min_i]);
         used.insert(min_i);
-        graph[min_i][min_j] = points[min_i].distance(points[min_j]);
-        graph[min_j][min_i] = points[min_i].distance(points[min_j]);
-        last_i = min_i;
+        distances_matrix[min_i][min_j] = min_d;
+        distances_matrix[min_j][min_i] = min_d;
+        used.insert(i);
     }
-    return make_pair(graph, points);
+    */
+    points.size();
+    return clusters;
 }

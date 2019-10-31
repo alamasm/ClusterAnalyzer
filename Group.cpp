@@ -13,6 +13,21 @@ Group::Group(int n, double x_center, double y_center, double x_dispersion, float
     }
 }
 
+Group::Group(vector<Point> points) {
+    double min_x=1e9, max_x=0, min_y=1e9, max_y=0;
+    for (auto point : points) {
+        if (point.x < min_x) min_x = point.x;
+        if (point.x > max_x) max_x = point.x;
+        if (point.y < min_y) min_y = point.y;
+        if (point.y > max_y) max_y = point.y;
+    }
+    x_center = (max_x + min_x) / 2;
+    y_center = (max_y + min_y) / 2;
+    x_dispersion = (max_x - min_x) / 2;
+    y_dispersion = (max_y - min_y) / 2;
+    this->points = points;
+}
+
 void Group::rotate_relatively_to_center(double alpha) {
     double old_x;
     for (size_t i = 0; i < points.size(); ++i) {
@@ -41,12 +56,13 @@ void Group::scale(double x_scale, double y_scale) {
 
 vector<double> Group::get_random_normal_vector(int n, double min, double max) {
     vector<double> res(n);
+    std::random_device rd;
+    std::mt19937 gen(rd());;
     uniform_real_distribution<double> unif(min,max);
-    default_random_engine re;
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < 100; ++j) {
-            res[i] += unif(re);
+            res[i] += unif(gen);
         }
         res[i] /= 100;
     }

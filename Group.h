@@ -15,6 +15,7 @@ class Group
     double x_dispersion;
     double y_dispersion;
     Group(int n, double x_center, double y_center, double x_dispersion, float y_dispersion);
+    Group(vector<Point> points);
     void rotate_relatively_to_center(double alpha);
     void rotate_relatively_to_origin(double alpha);
     void scale(double x_scale, double y_scale);

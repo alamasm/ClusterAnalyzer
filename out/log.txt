@@ -1,0 +1,4 @@
+reading points from save/points_save.txt
+printing spanning tree to spanning_tree.txt
+saving points to save/points_save.txt
+ending...
