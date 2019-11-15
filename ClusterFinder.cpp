@@ -4,26 +4,13 @@
 #include <random>
 #define N_ITER 3
 
-ClusterFinder::ClusterFinder(int algorithm, int d) {
+ClusterFinder::ClusterFinder(int algorithm, double d) {
     this->algorithm = algorithm;
     this->d = d;
 }
 
-vector<Cluster> ClusterFinder::find_clusters(Plane plane) {
-    switch (algorithm) {
-        case ALGORITHM_WAVE:
-            return find_clusters_with_wave_algorithm(plane.get_points());
-        case ALGORITHM_SPANNING_TREE:
-            return find_clusters_with_spanning_tree_algorithm(plane.get_points());
-        case ALGORITHM_K_MEANS:
-            return find_clusters_with_k_means_algorithm(plane.get_points());
-    }
-    return vector<Cluster>();
-}
-
-vector<Cluster> ClusterFinder::find_clusters_with_wave_algorithm(vector<Point> points) {
+void ClusterFinder::find_clusters_with_wave_algorithm(vector<Point> points) {
     vector<vector<int>> graph(points.size());
-    vector<Cluster> clusters;
     for (size_t i = 0; i < points.size(); ++i) {
             graph[i].resize(points.size());
             for (size_t j = 0; j < points.size(); ++j) {
@@ -53,16 +40,32 @@ vector<Cluster> ClusterFinder::find_clusters_with_wave_algorithm(vector<Point> p
         }
         clusters.push_back(cluster);
     }
-    return clusters;
 }
 
-vector<Cluster> ClusterFinder::find_clusters_with_k_means_algorithm(vector<Point> points) {
+void ClusterFinder::find_clusters_with_k_means_algorithm(vector<Point> points, int k) {
     vector<Cluster> clusters;
     vector<Cluster> cur_clusters;
     vector<Cluster> res_clusters;
     double mu = 0;
     double min_mu = 1e9;
     double min_k = 0;
+    double delta = 0;
+
+    if (k != -1) {
+        double min_mu_cur = 1e9;
+        for (int i = 0; i < N_ITER; ++i) {
+            cur_clusters.clear();
+            cur_clusters.resize(k);
+            mu = k_means(k, cur_clusters, points);
+            if (mu < min_mu_cur) {
+                min_mu_cur = mu;
+                copy_clusters(cur_clusters, clusters);
+            }
+        }
+        this->clusters = clusters;
+        return;
+    }
+
     for (size_t k = 1; k < 7; ++k) {
         clusters.clear();
         clusters.resize(k);
@@ -78,15 +81,17 @@ vector<Cluster> ClusterFinder::find_clusters_with_k_means_algorithm(vector<Point
             }
         }
 
-        cout << k << " " << min_mu_cur << endl;
-        if (min_mu_cur < min_mu) {
+        cout << k << " " << min_mu_cur << " " << fabs(min_mu_cur - min_mu) << endl;
+        if (fabs(min_mu_cur - min_mu) > delta) {
             min_mu = min_mu_cur;
             min_k = k;
+            delta = fabs(min_mu_cur - min_mu);
             copy_clusters(clusters, res_clusters);
         }
     }
     cout << min_k << endl;
-    return res_clusters;
+    this->clusters = res_clusters;
+    //return res_clusters;
 }
 
 double ClusterFinder::k_means(long unsigned k, vector<Cluster>& clusters, vector<Point>& points) {
@@ -124,11 +129,12 @@ double ClusterFinder::k_means(long unsigned k, vector<Cluster>& clusters, vector
         for (long unsigned i = 0; i < k; ++i) cluster_centers[i] = Point(0, 0);
         for (size_t i = 0; i < points.size(); ++i) {
             clusters_size[points_cluster[i]]++;
+            //cout << i << " " << points.size() << endl;
             cluster_centers[points_cluster[i]] += points[i];
         }
         
         for (long unsigned i = 0; i < k; ++i){
-             cluster_centers[i] /= clusters_size[i];
+             cluster_centers[i] /= (clusters_size[i]);
              clusters_size[i] = 1;
         }
     }
@@ -165,11 +171,10 @@ void ClusterFinder::copy_clusters(vector<Cluster>& from, vector<Cluster>& to) {
     }
 }
 
-vector<Cluster> ClusterFinder::find_clusters_with_spanning_tree_algorithm(vector<Point> points) {
-    vector<Cluster> clusters;
+void ClusterFinder::find_clusters_with_spanning_tree_algorithm(vector<Point> points) {
+    //vector<Cluster> clusters;
     vector<vector<double>> distances_matrix = spanning_tree(points).first;
-    
-    return clusters;
+    //return clusters;
 }
 
 pair<vector<vector<double>>, vector<Point>> ClusterFinder::spanning_tree(vector<Point> points) {
@@ -186,7 +191,7 @@ pair<vector<vector<double>>, vector<Point>> ClusterFinder::spanning_tree(vector<
     set<int> used;
     used.insert(0);
     double min_d;
-    size_t min_i = 0, min_j = 0, last_i = 0;
+    size_t min_i = 0, min_j = 0;
 
     while (used.size() < points.size()){
         if (used.size()%100 == 0) cout << used.size() << endl;
@@ -207,7 +212,73 @@ pair<vector<vector<double>>, vector<Point>> ClusterFinder::spanning_tree(vector<
         used.insert(min_i);
         graph[min_i][min_j] = points[min_i].distance(points[min_j]);
         graph[min_j][min_i] = points[min_i].distance(points[min_j]);
-        last_i = min_i;
     }
     return make_pair(graph, points);
+}
+
+void ClusterFinder::find_clusters_with_hierarchical_algorithm(vector<Point> points, int k) {
+    vector<vector<double>> graph(points.size());
+    for (size_t i = 0; i < points.size(); ++i) {
+        graph[i].resize(points.size());
+        for (size_t j = 0; j < points.size(); ++j) {
+            graph[i][j] = points[i].distance(points[j]);
+        }
+    }
+
+    for (int i = 0; i < points.size(); ++i) {
+        clusters.push_back(Cluster({points[i]}));
+    }
+
+    for (int k_clusters = 0; k_clusters < points.size() - k - 1; k_clusters++) {
+        double min_d = 1e9;
+        int min_i = 0, min_j = 0;
+        for (int i = 0; i < graph.size(); ++i) {
+            for (int j = i + 1; j < graph[i].size(); ++j) {
+                if (graph[i][j] < min_d) {
+                    min_d = graph[i][j];
+                    min_i = i;
+                    min_j = j;
+                }
+            }
+        }
+        cout << min_i << " " << min_j << endl;
+        union_clusters(min_i, min_j);
+        recalc_graph(graph, min_i, min_j);
+        clusters.erase(clusters.begin() + min_j);
+        cout <<"sizes: " << clusters.size() << " " << graph.size() << endl;
+    }
+}
+
+void ClusterFinder::union_clusters(int i, int j) {
+    cout << "before: " << clusters[i].points.size() << " " << clusters[j].points.size() << endl;
+    for (int k = 0; k < clusters[j].points.size(); ++k) {
+        clusters[i].add_point(clusters[j].points[k]);
+    }
+    cout << "after: " << clusters[i].points.size() << " " << clusters[j].points.size() << endl;
+    //clusters.erase(clusters.begin() + j);
+}
+
+void ClusterFinder::recalc_graph(vector<vector<double>>& graph, int i, int j) {
+    for (int k = 0; k < graph.size(); ++k) {
+        if (k == j) continue;
+        double d = min(graph[j][k], graph[i][k]);
+        graph[i][k] = d;
+        graph[k][i] = d;
+    }
+    graph.erase(graph.begin() + j);
+    for (int i = 0; i < graph.size(); ++i) {
+        graph[i].erase(graph[i].begin() + j);
+    }
+}
+
+double ClusterFinder::distance_1(vector<Point> a, vector<Point> b) {
+    double min = 1e9;
+    for (auto p1 : a) {
+        for (auto p2 : b) {
+            if (p1.distance(p2) < min) {
+                min = p1.distance(p2);
+            }
+        }
+    }
+    return min;
 }

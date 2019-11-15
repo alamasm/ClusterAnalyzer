@@ -5,5 +5,9 @@
 //rotate_center 0 1.57
 //rotate_center 2 0.79
 read_points -1
-print_spanning_tree spanning_tree.txt
+//print_spanning_tree spanning_tree.txt
+//print_spanning_tree_distances_histagram spanning_tree_histagram.txt
+//find_clusters_wave 5
+find_clusters_hierarchical 5
+print_clusters clusters_hierarchical.txt 0
 end

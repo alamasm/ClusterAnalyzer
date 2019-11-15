@@ -1,7 +1,14 @@
 create_group n x0 y0 x_dispersion y_dispersion
 rotate_center group_number alpha
 rotate_origin group_number alpha
-find_clusters algo d (algo is integer, 0 - wave, 1 - spanning tree, 2 - k_means; d is diameter in wave, 0 if not used)
+
+find_clusters_wave d
+find_clusters_spanning_tree
+find_clusters_k_means k (-1 to find k automatically)
+
 print_clusters filename n
+print_spanning_tree_distances_histagram filename
+
 read_points filename (-1 filename to read last program use points)
+
 end

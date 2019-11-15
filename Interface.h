@@ -18,6 +18,7 @@ class Interface
     int points_saved = 0;
     int from_file = 0;
     void parse();
+    void print_distances(vector<vector<double>> g, ofstream& out);
     void print_points(ofstream &out, vector<Point> points, int group);
     void print_clusters(ofstream& out, vector<Cluster> clusters);
     void print_result(ofstream &out);

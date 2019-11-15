@@ -21,10 +21,35 @@ vector<Group> Control::get_groups() {
     return plane.groups;
 }
 
+/*
 void Control::find_clusters(int algorithm, int d) {
     ClusterFinder finder = ClusterFinder(algorithm, d);
     clusters.push_back(finder.find_clusters(plane));
     clusters_searches_n++;
+}*/
+
+void Control::find_clusters_wave(double d) {
+    ClusterFinder finder = ClusterFinder(0, d);
+    finder.find_clusters_with_wave_algorithm(plane.get_points());
+    finders.push_back(finder);
+}
+
+void Control::find_clusters_k_means(int k) {
+    ClusterFinder finder = ClusterFinder(2);
+    finder.find_clusters_with_k_means_algorithm(plane.get_points(), k);
+    finders.push_back(finder);
+}
+
+void Control::find_clusters_spanning_tree() {
+    ClusterFinder finder = ClusterFinder(1);
+    finder.find_clusters_with_spanning_tree_algorithm(plane.get_points());
+    finders.push_back(finder);
+}
+
+void Control::find_clusters_hierarchical(int k) {
+    ClusterFinder finder = ClusterFinder(3);
+    finder.find_clusters_with_hierarchical_algorithm(plane.get_points(), k);
+    finders.push_back(finder);
 }
 
 pair<vector<vector<double>>, vector<Point>> Control::get_spanning_tree() {
@@ -38,8 +63,8 @@ pair<vector<vector<double>>, vector<Point>> Control::get_spanning_tree() {
 }
 
 vector<Cluster> Control::get_clusters(int n) {
-    if (n == -1) return clusters.back();
-    else return clusters[n];
+    if (n == -1) return finders.back().clusters;
+    else return finders[n].clusters;
 }
 
 int Control::set_groups(vector<Group> groups) {

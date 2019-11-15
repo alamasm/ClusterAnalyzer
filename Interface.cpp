@@ -71,13 +71,35 @@ void Interface::parse() {
             log("rotating group " + to_string(n) + " relatively to origin on " + to_string(alpha) + " radians");
             control.rotate_group_relatively_to_origin(n, alpha);
         }
-        if (s == "find_clusters") {
+        /*if (s == "find_clusters") {
             int algorithm;
             int d;
             *in >> algorithm;
             *in >> d;
             log("finding clusters with " + to_string(algorithm) + " algorithm and d = " + to_string(d));
             control.find_clusters(algorithm, d);
+        }*/
+        if (s == "find_clusters_wave") {
+            double d;
+            *in >> d;
+            log("finding clusters with wave algorithm and d =" + to_string(d));
+            control.find_clusters_wave(d);
+        }
+        if (s == "find_clusters_k_means") {
+            int k;
+            *in >> k;
+            log("finding clusters with k-means algorithm and k = " + to_string(k));
+            control.find_clusters_k_means(k);
+        }
+        if (s == "find_clusters_spanning_tree") {
+            log("finding clusters with spanning tree algorithm");
+            control.find_clusters_spanning_tree();
+        }
+        if (s == "find_clusters_hierarchical") {
+            int k;
+            *in >> k;
+            log("finding clusters with hierarchical algorithm and k = " + to_string(k));
+            control.find_clusters_hierarchical(k);
         }
         if (s == "print_clusters") {
             string filename;
@@ -111,6 +133,26 @@ void Interface::parse() {
             out.close();
             out_gnu.close();
         }
+        if (s == "print_spanning_tree_distances_histagram") {
+            string filename;
+            *in >> filename;
+            ofstream out;
+            ofstream out_gnu;
+            string filename_gnu = "out/" + filename.substr(0, filename.find_last_of('.')) + "_gnu.plt";
+            out_gnu.open(filename_gnu);
+            out.open("out/" + filename);
+            vector<vector<double>> g = control.get_spanning_tree().first;
+            print_distances(g, out);
+
+            out_gnu << ("binwidth=0.1\n"
+                       "bin(x,width)=width*floor(x/width) + width/2.0\n"
+                       "set boxwidth binwidth\n"
+                       "plot '"+filename+"' using (bin($1,binwidth)):(1.0) smooth freq with boxes");
+
+            log("printing spanning tree histagram to out/" + filename);
+            out.close();
+            out_gnu.close();
+        }
         if (s == "read_points") {
             string filename;
             *in >> filename;
@@ -139,11 +181,19 @@ void Interface::parse() {
 }
 
 void Interface::print_spanning_tree(ofstream &out, pair<vector<vector<double>>, vector<Point>> g) {
-    for (int i = 0; i < g.first.size(); ++i) {
-        for (int j = i; j < g.first[i].size(); ++j) {
+    for (size_t i = 0; i < g.first.size(); ++i) {
+        for (size_t j = i; j < g.first[i].size(); ++j) {
             if (g.first[i][j] >= 0) out << g.second[j].x << " " << g.second[j].y << endl;
         }
         out << endl;
+    }
+}
+
+void Interface::print_distances(vector<vector<double>> g, ofstream& out) {
+    for (size_t i = 0; i < g.size(); ++i) {
+        for (size_t j = i + 1; j < g.size(); ++j) {
+            if (g[i][j] > 0) out << g[i][j] << endl;
+        }
     }
 }
 

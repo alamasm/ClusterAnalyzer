@@ -1,4 +1,5 @@
 reading points from save/points_save.txt
-printing spanning tree to spanning_tree.txt
+finding clusters with hierarchical algorithm and k = 5
+printing clusters to clusters_hierarchical.txt
 saving points to save/points_save.txt
 ending...
