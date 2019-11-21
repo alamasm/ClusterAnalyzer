@@ -171,10 +171,46 @@ void ClusterFinder::copy_clusters(vector<Cluster>& from, vector<Cluster>& to) {
     }
 }
 
-void ClusterFinder::find_clusters_with_spanning_tree_algorithm(vector<Point> points) {
-    //vector<Cluster> clusters;
-    vector<vector<double>> distances_matrix = spanning_tree(points).first;
-    //return clusters;
+void ClusterFinder::find_clusters_with_spanning_tree_algorithm(vector<Point> points, int n_clusters, pair<vector<vector<double>>, vector<Point>>* spanning_tree_) {
+    vector<vector<double>> distances_matrix;
+    if (spanning_tree_ == NULL) distances_matrix = spanning_tree(points).first;
+    else distances_matrix = spanning_tree_->first;
+    for (int i = 0; i < n_clusters; ++i) {
+        double max_d = 0;
+        int max_j = 0, max_k = 0;
+        for (int j = 0; j < distances_matrix.size(); ++j) {
+            for (int k = i + 1; k < distances_matrix[j].size(); ++k) {
+                if (distances_matrix[j][k] > 0 && distances_matrix[j][k] > max_d) {
+                    max_d = distances_matrix[j][k];
+                    max_j = j;
+                    max_k = k;
+                }
+            }
+        }
+
+        distances_matrix[max_j][max_k] = -1;
+        distances_matrix[max_k][max_j] = -1;
+    }
+
+    set<int> used;
+    for (size_t i = 0; i < points.size(); ++i) {
+        if (used.count(i) != 0) continue;
+        Cluster cluster;
+        stack<int> stack;
+        stack.push(i);
+        while (!stack.empty()) {
+            int cur = stack.top();
+            stack.pop();
+            for (size_t j = 0; j < points.size(); ++j) {
+                if (distances_matrix[cur][j] >= 0 && used.count(j) == 0) {
+                    used.insert(j);
+                    cluster.add_point(points[j]);
+                    stack.push(j);
+                } 
+            }
+        }
+        clusters.push_back(cluster);
+    }
 }
 
 pair<vector<vector<double>>, vector<Point>> ClusterFinder::spanning_tree(vector<Point> points) {
@@ -281,4 +317,45 @@ double ClusterFinder::distance_1(vector<Point> a, vector<Point> b) {
         }
     }
     return min;
+}
+
+void ClusterFinder::find_clusters_with_forel_algorithm(vector<Point> points, double R) {
+    Point point0 = points[0];
+    set<int> used;
+    bool going = 1;
+    vector<int> cur_points;
+    while (used.size() < points.size() - 1) {
+        while (going) {
+            cur_points.clear();
+            cur_points.resize(0);
+            for (int i = 1; i < points.size(); ++i) {
+                if (used.count(i) == 0 && points[i].distance(point0) < R) cur_points.push_back(i);
+            }
+            Point new_point0 = Point(0, 0);
+            for (int i = 0; i < cur_points.size(); ++i) {
+                new_point0 += points[cur_points[i]];
+            }
+            
+            new_point0 += point0;
+            new_point0 /= (cur_points.size() + 1);
+            going = 0;
+            if (!(new_point0 == point0)) going = 1;
+            point0 = new_point0;
+        }
+
+        Cluster cluster;
+        for (int i = 0; i < cur_points.size(); ++i) {
+            used.insert(cur_points[i]);
+            cluster.add_point(points[cur_points[i]]);
+        }
+        clusters.push_back(cluster);
+        going = 1;
+
+        for (int i = 0; i < points.size(); ++i) {
+            if (used.count(i) == 0 && !(points[i] == point0)) {
+                point0 = points[i];
+                break;
+            }
+        }
+    }
 }

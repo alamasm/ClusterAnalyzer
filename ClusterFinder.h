@@ -25,8 +25,9 @@ class ClusterFinder
     
     void find_clusters_with_wave_algorithm(vector<Point> points);
     void find_clusters_with_k_means_algorithm(vector<Point> points, int k);
-    void find_clusters_with_spanning_tree_algorithm(vector<Point> points);
+    void find_clusters_with_spanning_tree_algorithm(vector<Point> points, int n_clusters, pair<vector<vector<double>>, vector<Point>> *spanning_tree = NULL);
     void find_clusters_with_hierarchical_algorithm(vector<Point> points, int k);
+    void find_clusters_with_forel_algorithm(vector<Point> points, double R);
 
     static double distance_1(vector<Point> a, vector<Point> b);
 

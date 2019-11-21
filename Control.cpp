@@ -40,15 +40,22 @@ void Control::find_clusters_k_means(int k) {
     finders.push_back(finder);
 }
 
-void Control::find_clusters_spanning_tree() {
+void Control::find_clusters_spanning_tree(int k) {
     ClusterFinder finder = ClusterFinder(1);
-    finder.find_clusters_with_spanning_tree_algorithm(plane.get_points());
+    if (!spanning_tree_initialized) get_spanning_tree();
+    finder.find_clusters_with_spanning_tree_algorithm(plane.get_points(), k, &spanning_tree);
     finders.push_back(finder);
 }
 
 void Control::find_clusters_hierarchical(int k) {
     ClusterFinder finder = ClusterFinder(3);
     finder.find_clusters_with_hierarchical_algorithm(plane.get_points(), k);
+    finders.push_back(finder);
+}
+
+void Control::find_clusters_forel(double R) {
+    ClusterFinder finder = ClusterFinder(4);
+    finder.find_clusters_with_forel_algorithm(plane.get_points(), R);
     finders.push_back(finder);
 }
 

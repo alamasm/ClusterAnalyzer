@@ -32,3 +32,13 @@ Point Point::operator/=(double x) {
     this->y /= x;
     return *this;
 }
+
+bool Point::operator==(Point b) {
+    return (fabs(this->x - b.x) < eps && fabs(this->y - b.y) < eps);
+}
+
+Point Point::operator=(Point b) {
+    this->x = b.x;
+    this->y = b.y;
+    return *this;
+}

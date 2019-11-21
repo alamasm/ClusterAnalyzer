@@ -92,14 +92,22 @@ void Interface::parse() {
             control.find_clusters_k_means(k);
         }
         if (s == "find_clusters_spanning_tree") {
-            log("finding clusters with spanning tree algorithm");
-            control.find_clusters_spanning_tree();
+            int k;
+            *in >> k;
+            log("finding clusters with spanning tree algorithm with k = " + to_string(k));
+            control.find_clusters_spanning_tree(k);
         }
         if (s == "find_clusters_hierarchical") {
             int k;
             *in >> k;
             log("finding clusters with hierarchical algorithm and k = " + to_string(k));
             control.find_clusters_hierarchical(k);
+        }
+        if (s == "find_clusters_forel") {
+            double R;
+            *in >> R;
+            log("finding clusters with FOREL algorithm and R = " + to_string(R));
+            control.find_clusters_forel(R);
         }
         if (s == "print_clusters") {
             string filename;

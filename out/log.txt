@@ -1,5 +1,5 @@
 reading points from save/points_save.txt
-finding clusters with hierarchical algorithm and k = 5
-printing clusters to clusters_hierarchical.txt
+finding clusters with FOREL algorithm and R = 10.000000
+printing clusters to clusters_forel_5.txt
 saving points to save/points_save.txt
 ending...

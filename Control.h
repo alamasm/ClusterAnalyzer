@@ -23,8 +23,9 @@ class Control
     //void find_clusters(int algorithm, int d = 1);
     void find_clusters_wave(double d);
     void find_clusters_k_means(int k);
-    void find_clusters_spanning_tree();
+    void find_clusters_spanning_tree(int k);
     void find_clusters_hierarchical(int k);
+    void find_clusters_forel(double R);
     pair<vector<vector<double>>, vector<Point>> get_spanning_tree();
     
     vector<Cluster> get_clusters(int n = -1);
