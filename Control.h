@@ -26,6 +26,7 @@ class Control
     void find_clusters_spanning_tree(int k);
     void find_clusters_hierarchical(int k);
     void find_clusters_forel(double R);
+    void find_clusters_dbscan(int min_pts, double eps);
     pair<vector<vector<double>>, vector<Point>> get_spanning_tree();
     
     vector<Cluster> get_clusters(int n = -1);

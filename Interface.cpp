@@ -109,6 +109,13 @@ void Interface::parse() {
             log("finding clusters with FOREL algorithm and R = " + to_string(R));
             control.find_clusters_forel(R);
         }
+        if (s == "find_clusters_dbscan") {
+            int min_pts;
+            double eps;
+            *in >> min_pts >> eps;
+            log("finding clusters with DBSCAN algorithm and min_pts, eps = " + to_string(min_pts) + ", " + to_string(eps));
+            control.find_clusters_dbscan(min_pts, eps);
+        }
         if (s == "print_clusters") {
             string filename;
             *in >> filename;
@@ -149,7 +156,7 @@ void Interface::parse() {
             string filename_gnu = "out/" + filename.substr(0, filename.find_last_of('.')) + "_gnu.plt";
             out_gnu.open(filename_gnu);
             out.open("out/" + filename);
-            vector<vector<double>> g = control.get_spanning_tree().first;
+            vector<vector<double>> g = control.get_spanning_tree().first; 
             print_distances(g, out);
 
             out_gnu << ("binwidth=0.1\n"

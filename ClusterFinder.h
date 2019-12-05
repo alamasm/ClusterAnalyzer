@@ -17,6 +17,8 @@ class ClusterFinder
     static const int ALGORITHM_SPANNING_TREE = 1;
     static const int ALGORITHM_K_MEANS = 2;
     static const int ALGORITHM_HIERARCHICAL = 3;
+    static const int ALGORITHM_FOREL = 4;
+    static const int ALGORITHM_DBSCAN = 5;
 
     ClusterFinder(int algorithm, double d = 0);
     pair<vector<vector<double>>, vector<Point>> spanning_tree(vector<Point> points);
@@ -28,6 +30,7 @@ class ClusterFinder
     void find_clusters_with_spanning_tree_algorithm(vector<Point> points, int n_clusters, pair<vector<vector<double>>, vector<Point>> *spanning_tree = NULL);
     void find_clusters_with_hierarchical_algorithm(vector<Point> points, int k);
     void find_clusters_with_forel_algorithm(vector<Point> points, double R);
+    void find_clusters_with_dbscan_algorithm(vector<Point> points, int min_pts, double eps);
 
     static double distance_1(vector<Point> a, vector<Point> b);
 
@@ -40,4 +43,5 @@ class ClusterFinder
     void copy_clusters(vector<Cluster>& from, vector<Cluster>& to);
     void recalc_graph(vector<vector<double>>& graph, int i, int j);
     void union_clusters(int i, int j);
+    set<int> get_neighbors(vector<Point> points, Point p, double eps);
 };

@@ -59,6 +59,12 @@ void Control::find_clusters_forel(double R) {
     finders.push_back(finder);
 }
 
+void Control::find_clusters_dbscan(int min_pts, double eps) {
+    ClusterFinder finder = ClusterFinder(5);
+    finder.find_clusters_with_dbscan_algorithm(plane.get_points(), min_pts, eps);
+    finders.push_back(finder);
+}
+
 pair<vector<vector<double>>, vector<Point>> Control::get_spanning_tree() {
     if (!spanning_tree_initialized || points_changed) {
         ClusterFinder finder = ClusterFinder(0, 0);

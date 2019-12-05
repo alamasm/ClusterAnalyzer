@@ -11,4 +11,5 @@ class Point
     //Point(const Point& point);
     Point();
     double distance(Point p);
+
 };
