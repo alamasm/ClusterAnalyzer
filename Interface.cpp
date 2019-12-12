@@ -123,15 +123,19 @@ void Interface::parse() {
             *in >> n;
             ofstream out;
             ofstream out_gnu;
+            ofstream out_eighen;
             string filename_gnu = "out/" + filename.substr(0, filename.find_last_of('.')) + "_gnu.plt";
+            string filename_eighen = filename.substr(0, filename.find_last_of('.')) + "_eighen.txt";
             out_gnu.open(filename_gnu);
             out_gnu << "set palette model RGB defined (0 \"red\",1 \"blue\", 2 \"green\", 3 \"yellow\", 4 \"orange\", 5 \"black\", 6 \"violet\")\n";
-            out_gnu << "plot '"+ filename + "' using 1:2:3 notitle with points pt 2 palette";
+            out_gnu << "plot '"+ filename + "' using 1:2:3 notitle with points pt 2 palette, " + "'" + filename_eighen + "' using 1:2:3:4 with vectors filled head lw 3";
             out.open("out/" + filename);
+            out_eighen.open("out/" + filename_eighen);
             log("printing clusters to " + filename);
-            print_clusters(out, control.get_clusters(n));
+            print_clusters(out, out_eighen, control.get_clusters(n));
             out.close();
             out_gnu.close();
+            out_eighen.close();
         }
         if (s == "print_spanning_tree") {
             string filename;
@@ -218,9 +222,12 @@ void Interface::print_points(ofstream& out, vector<Point> points, int group) {
     }
 }
 
-void Interface::print_clusters(ofstream& out, vector<Cluster> clusters) {
+void Interface::print_clusters(ofstream& out, ofstream& out_eighen, vector<Cluster> clusters) {
     for (size_t i = 0; i < clusters.size(); ++i) {
         print_points(out, clusters[i].points, i);
+        auto eighen = clusters[i].get_eighen_vectors();
+        out_eighen << eighen.first.x << " " << eighen.first.y << " " << eighen.second.first.x << " " << eighen.second.first.y << endl;
+        out_eighen << eighen.first.x << " " << eighen.first.y << " " << eighen.second.second.x << " " << eighen.second.second.y << endl;
     }
 }
 

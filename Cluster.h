@@ -11,4 +11,5 @@ class Cluster
     Cluster(std::vector<Point> points);
     Cluster();
     int add_point(Point point);
+    std::pair<Point, std::pair<Point, Point>> get_eighen_vectors();
 };

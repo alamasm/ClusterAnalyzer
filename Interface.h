@@ -20,7 +20,7 @@ class Interface
     void parse();
     void print_distances(vector<vector<double>> g, ofstream& out);
     void print_points(ofstream &out, vector<Point> points, int group);
-    void print_clusters(ofstream& out, vector<Cluster> clusters);
+    void print_clusters(ofstream& out, ofstream& out_eighen, vector<Cluster> clusters);
     void print_result(ofstream &out);
     void print_spanning_tree(ofstream &out, pair<vector<vector<double>>, vector<Point>> g);
     void log(string s);
