@@ -5,6 +5,6 @@
 //rotate_center 0 1.57
 //rotate_center 2 0.79
 read_points -1
-find_clusters_dbscan 3 10
+find_clusters_dbscan 6 10
 print_clusters clusters_dbscan_10_1.txt 0
 end

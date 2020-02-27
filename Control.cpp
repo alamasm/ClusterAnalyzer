@@ -21,54 +21,47 @@ vector<Group> Control::get_groups() {
     return plane.groups;
 }
 
-/*
-void Control::find_clusters(int algorithm, int d) {
-    ClusterFinder finder = ClusterFinder(algorithm, d);
-    clusters.push_back(finder.find_clusters(plane));
-    clusters_searches_n++;
-}*/
-
 void Control::find_clusters_wave(double d) {
-    ClusterFinder finder = ClusterFinder(0, d);
-    finder.find_clusters_with_wave_algorithm(plane.get_points());
-    finders.push_back(finder);
+    Algorithm alg = WaveAlgorithm(d);
+    alg.find_clusters(plane.get_points());
+    finders.push_back(alg);
 }
 
 void Control::find_clusters_k_means(int k) {
-    ClusterFinder finder = ClusterFinder(2);
-    finder.find_clusters_with_k_means_algorithm(plane.get_points(), k);
-    finders.push_back(finder);
+    Algorithm alg = KMeansAlgorithm(k);
+    alg.find_clusters(plane.get_points());
+    finders.push_back(alg);
 }
 
 void Control::find_clusters_spanning_tree(int k) {
-    ClusterFinder finder = ClusterFinder(1);
     if (!spanning_tree_initialized) get_spanning_tree();
-    finder.find_clusters_with_spanning_tree_algorithm(plane.get_points(), k, &spanning_tree);
-    finders.push_back(finder);
+    Algorithm alg = SpanningTreeAlgorithm(k, &spanning_tree);
+    alg.find_clusters(plane.get_points());
+    finders.push_back(alg);
 }
 
 void Control::find_clusters_hierarchical(int k) {
-    ClusterFinder finder = ClusterFinder(3);
-    finder.find_clusters_with_hierarchical_algorithm(plane.get_points(), k);
-    finders.push_back(finder);
+    Algorithm alg = HierarchicalAlgorithm(k);
+    alg.find_clusters(plane.get_points());
+    finders.push_back(alg);
 }
 
 void Control::find_clusters_forel(double R) {
-    ClusterFinder finder = ClusterFinder(4);
-    finder.find_clusters_with_forel_algorithm(plane.get_points(), R);
-    finders.push_back(finder);
+    Algorithm alg = FORELAlgorithm(R);
+    alg.find_clusters(plane.get_points());
+    finders.push_back(alg);
 }
 
 void Control::find_clusters_dbscan(int min_pts, double eps) {
-    ClusterFinder finder = ClusterFinder(5);
-    finder.find_clusters_with_dbscan_algorithm(plane.get_points(), min_pts, eps);
-    finders.push_back(finder);
+    Algorithm alg = DBScanAlgorithm(min_pts, eps);
+    alg.find_clusters(plane.get_points());
+    finders.push_back(alg);
 }
 
 pair<vector<vector<double>>, vector<Point>> Control::get_spanning_tree() {
     if (!spanning_tree_initialized || points_changed) {
-        ClusterFinder finder = ClusterFinder(0, 0);
-        spanning_tree = finder.spanning_tree(plane.get_points());
+        SpanningTreeAlgorithm alg = SpanningTreeAlgorithm(0, NULL);
+        spanning_tree = alg.spanning_tree(plane.get_points());
         spanning_tree_initialized = 1;
         points_changed = 0;
     }

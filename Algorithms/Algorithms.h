@@ -1,0 +1,6 @@
+#include "DBScanAlgorithm.h"
+#include "FORELAlgorithm.h"
+#include "HierarchicalAlgorithm.h"
+#include "KMeansAlgorithm.h"
+#include "SpanningTreeAlgorithm.h"
+#include "WaveAlgorithm.h"

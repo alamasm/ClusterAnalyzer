@@ -42,7 +42,3 @@ Point Point::operator=(Point b) {
     this->y = b.y;
     return *this;
 }
-
-bool comparator(const Point p1, const Point p2) {
-    return p1.x < p2.x;
-};

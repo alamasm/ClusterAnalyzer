@@ -2,7 +2,7 @@
 #include <fstream>
 #ifndef cluster_finder_include
 #define cluster_finder_include
-#include "ClusterFinder.h"
+#include "Algorithms.h"
 #endif
 
 using namespace std;
@@ -36,6 +36,6 @@ class Control
 
     private:
     Plane plane;
-    vector<ClusterFinder> finders;
+    vector<Algorithm> finders;
     void print_points(vector<Point> points, ofstream &out, int group);
 };
