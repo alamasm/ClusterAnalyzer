@@ -1,4 +1,7 @@
+#ifndef AlgorithmDef
+#define AlgorithmDef
 #include "Algorithm.h"
+#endif
 class WaveAlgorithm : public Algorithm {
     public:
     double d;

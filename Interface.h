@@ -23,6 +23,7 @@ class Interface
     void print_clusters(ofstream& out, ofstream& out_eighen, vector<Cluster> clusters);
     void print_result(ofstream &out);
     void print_spanning_tree(ofstream &out, pair<vector<vector<double>>, vector<Point>> g);
+    void print_em_ellipses(ofstream &out_gnu, ofstream &out_em_data, string filename_em_data);
     void log(string s);
     vector<Group> get_groups_from_file(ifstream &in);
 };

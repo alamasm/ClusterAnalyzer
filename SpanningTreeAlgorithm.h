@@ -1,4 +1,7 @@
+#ifndef AlgorithmDef
+#define AlgorithmDef
 #include "Algorithm.h"
+#endif
 class SpanningTreeAlgorithm : public Algorithm {
     public:
     int n_clusters;

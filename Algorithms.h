@@ -4,3 +4,4 @@
 #include "KMeansAlgorithm.h"
 #include "SpanningTreeAlgorithm.h"
 #include "WaveAlgorithm.h"
+#include "EMAlgorithm.h"

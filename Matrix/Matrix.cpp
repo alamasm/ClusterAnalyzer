@@ -49,3 +49,7 @@ Matrix Matrix::dot(const Matrix& b) const {
     }
     return res;
 }
+
+double Matrix::det() const {
+    return 0;
+}

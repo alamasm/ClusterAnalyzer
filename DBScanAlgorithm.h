@@ -1,4 +1,7 @@
+#ifndef AlgorithmDef
+#define AlgorithmDef
 #include "Algorithm.h"
+#endif
 class DBScanAlgorithm : public Algorithm {
     public:
     int min_pts;

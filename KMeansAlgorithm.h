@@ -1,4 +1,7 @@
+#ifndef AlgorithmDef
+#define AlgorithmDef
 #include "Algorithm.h"
+#endif
 class KMeansAlgorithm : public Algorithm {
     public:
     int k;

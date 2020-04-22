@@ -59,7 +59,7 @@ pair<vector<vector<double>>, vector<Point>> SpanningTreeAlgorithm::spanning_tree
     size_t min_i = 0, min_j = 0;
 
     while (used.size() < points.size()){
-        if (used.size()%100 == 0) cout << used.size() << endl;
+        //if (used.size()%100 == 0) cout << used.size() << endl;
         min_d = 1e9;
         for (size_t j = 0; j < cur_points.size(); ++j) {
             for (size_t k = 0; k < points.size(); ++k) {

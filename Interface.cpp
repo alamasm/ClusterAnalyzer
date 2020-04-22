@@ -116,6 +116,12 @@ void Interface::parse() {
             log("finding clusters with DBSCAN algorithm and min_pts, eps = " + to_string(min_pts) + ", " + to_string(eps));
             control.find_clusters_dbscan(min_pts, eps);
         }
+        if (s == "find_clusters_em") {
+            int k;
+            *in >> k;
+            log("finding clusters with EM-Algorithm and k = " + to_string(k));
+            control.find_clusters_em(k);
+        }
         if (s == "print_clusters") {
             string filename;
             *in >> filename;
@@ -136,6 +142,26 @@ void Interface::parse() {
             out.close();
             out_gnu.close();
             out_eighen.close();
+        }
+        if (s == "print_clusters_em") {
+            string filename;
+            *in >> filename;
+            ofstream out;
+            ofstream out_gnu;
+            ofstream out_eighen;
+            ofstream out_em_data;
+            string filename_gnu = "out/" + filename.substr(0, filename.find_last_of('.')) + "_gnu.plt";
+            string filename_eighen = filename.substr(0, filename.find_last_of('.')) + "_eighen.txt";
+            string filename_em_data = filename.substr(0, filename.find_last_of('.')) + "_em_data.txt";
+            out_gnu.open(filename_gnu);
+            out_eighen.open("out/" + filename_eighen);
+            out_em_data.open("out/" + filename_em_data);
+            out_gnu << "set palette model RGB defined (0 \"red\",1 \"blue\", 2 \"green\", 3 \"yellow\", 4 \"orange\", 5 \"black\", 6 \"violet\")\n";    
+            out_gnu << "plot '"+ filename + "' using 1:2:3 notitle with points pt 2 palette, " + "'" + filename_eighen + "' using 1:2:3:4 with vectors filled head lw 3\n";
+            out.open("out/" + filename);
+            log("printing em clusters to " + filename);
+            print_clusters(out, out_eighen, control.get_clusters(control.em_index));
+            print_em_ellipses(out_gnu, out_em_data, filename_em_data);
         }
         if (s == "print_spanning_tree") {
             string filename;
@@ -206,6 +232,15 @@ void Interface::print_spanning_tree(ofstream &out, pair<vector<vector<double>>, 
         }
         out << endl;
     }
+}
+
+void Interface::print_em_ellipses(ofstream& out_gnu, ofstream& out_em_data, string filename_em_data) {
+    pair<int, pair<vector<pair<Point, double>>, vector<Point>>> data = control.get_em_data();
+    for (int i = 0; i < data.first; ++i) {
+        out_em_data << data.second.second[i].x << " " << data.second.second[i].y << " " << data.second.first[i].first.x << " " << data.second.first[i].first.y << " "
+         << data.second.first[i].second << endl;
+    }
+    out_gnu << "plot '" + filename_em_data + "' using 1:2:3:4:5 with ellipses";
 }
 
 void Interface::print_distances(vector<vector<double>> g, ofstream& out) {

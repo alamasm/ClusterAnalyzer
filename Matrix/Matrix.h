@@ -8,6 +8,7 @@ class Matrix {
     double get(int x, int y) const;
     vector<double>& operator[](size_t i) {return data[i];}
     Matrix dot(const Matrix& b) const;
+    double det() const;
     Matrix operator*(double a);
     private:
     vector<vector<double>> data;

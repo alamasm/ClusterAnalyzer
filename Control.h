@@ -11,6 +11,7 @@ class Control
     public:
     int clusters_searches_n = 0;
     int points_changed = 0;
+    int em_index;
     int spanning_tree_initialized = 0;
     pair<vector<vector<double>>, vector<Point>> spanning_tree;
     
@@ -27,7 +28,9 @@ class Control
     void find_clusters_hierarchical(int k);
     void find_clusters_forel(double R);
     void find_clusters_dbscan(int min_pts, double eps);
+    void find_clusters_em(int k);
     pair<vector<vector<double>>, vector<Point>> get_spanning_tree();
+    pair<int, pair<vector<pair<Point, double>>, vector<Point>>> get_em_data();
     
     vector<Cluster> get_clusters(int n = -1);
     
@@ -36,6 +39,6 @@ class Control
 
     private:
     Plane plane;
-    vector<Algorithm> finders;
+    vector<Algorithm*> finders;
     void print_points(vector<Point> points, ofstream &out, int group);
 };
