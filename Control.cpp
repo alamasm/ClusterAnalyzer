@@ -75,11 +75,15 @@ pair<vector<vector<double>>, vector<Point>> Control::get_spanning_tree() {
     return spanning_tree;
 }
 
-pair<int, pair<vector<pair<Point, double>>, vector<Point>>> Control::get_em_data() {
+pair<int, EM_step_data> Control::get_em_data() {
     EMAlgorithm* em = (EMAlgorithm*) finders[em_index];
-    return make_pair(em->k, make_pair(em->get_eighen(), em->mu));
+    return make_pair(em->k, em->get_res_data());
 }
 
+pair<int, vector<EM_step_data>> Control::get_em_animation_data() {
+    EMAlgorithm*em = (EMAlgorithm*) finders[em_index];
+    return make_pair(em->k, em->animation);
+}
 vector<Cluster> Control::get_clusters(int n) {
     if (n == -1) return finders.back()->clusters;
     else return finders[n]->clusters;

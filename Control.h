@@ -14,6 +14,7 @@ class Control
     int em_index;
     int spanning_tree_initialized = 0;
     pair<vector<vector<double>>, vector<Point>> spanning_tree;
+
     
     void create_group(int n, double x0, double y0, double x_dispersion, double y_dispersion);
     void rotate_group_relatively_to_center(int group_n, double alpha);
@@ -30,7 +31,8 @@ class Control
     void find_clusters_dbscan(int min_pts, double eps);
     void find_clusters_em(int k);
     pair<vector<vector<double>>, vector<Point>> get_spanning_tree();
-    pair<int, pair<vector<pair<Point, double>>, vector<Point>>> get_em_data();
+    pair<int, EM_step_data> get_em_data();
+    pair<int, vector<EM_step_data>> get_em_animation_data();
     
     vector<Cluster> get_clusters(int n = -1);
     

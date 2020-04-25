@@ -148,20 +148,39 @@ void Interface::parse() {
             *in >> filename;
             ofstream out;
             ofstream out_gnu;
+            ofstream out_animation_gnu;
             ofstream out_eighen;
             ofstream out_em_data;
+            ofstream out_em_animation_data;
             string filename_gnu = "out/" + filename.substr(0, filename.find_last_of('.')) + "_gnu.plt";
+            string filename_animation_gnu = "out/" + filename.substr(0, filename.find_last_of('.')) + "_animation_gnu.plt";
             string filename_eighen = filename.substr(0, filename.find_last_of('.')) + "_eighen.txt";
             string filename_em_data = filename.substr(0, filename.find_last_of('.')) + "_em_data.txt";
+            string filename_em_animation_data = filename.substr(0, filename.find_last_of('.')) + "_animation_data.txt";
+            string filename_gif = filename.substr(0, filename.find_last_of('.')) + "_animation.gif";
             out_gnu.open(filename_gnu);
             out_eighen.open("out/" + filename_eighen);
             out_em_data.open("out/" + filename_em_data);
+            out_em_animation_data.open("out/" + filename_em_animation_data);
+            out_animation_gnu.open(filename_animation_gnu);
+
+            int k = control.get_em_data().first;
+            int s = control.get_em_animation_data().second.size();
             out_gnu << "set palette model RGB defined (0 \"red\",1 \"blue\", 2 \"green\", 3 \"yellow\", 4 \"orange\", 5 \"black\", 6 \"violet\")\n";    
-            out_gnu << "plot '"+ filename + "' using 1:2:3 notitle with points pt 2 palette, " + "'" + filename_eighen + "' using 1:2:3:4 with vectors filled head lw 3\n";
+            out_gnu << "plot '"+ filename + "' using 1:2:3 notitle with points pt 2 palette, " + "'" + filename_eighen + "' using 1:2:3:4 with vectors filled head lw 3, " + "'" + filename_em_data + "' using 1:2:3:4:5 with ellipses";
+            out_animation_gnu << "set term gif animate optimize delay 100 size 600, 600 background \"#ffeedf\" crop" << endl;
+            out_animation_gnu << "set output '" << filename_gif << "'" << endl;
+            out_animation_gnu << "set size square" << endl;
+            out_animation_gnu << "do for [i=0:" << s << "] {" << endl;
+            out_animation_gnu << "set palette model RGB defined (0 \"red\",1 \"blue\", 2 \"green\", 3 \"yellow\", 4 \"orange\", 5 \"black\", 6 \"violet\")\n";    
+            out_animation_gnu << "plot '"+ filename + "' using 1:2:3 notitle with points pt 2 palette, " + "'" + filename_eighen + "' using 1:2:3:4 with vectors filled head lw 3, " + "'" + filename_em_animation_data + "' every::i*" << k << "::(i+1)*" << k << "-1 using 1:2:3:4:5 with ellipses";
+            out_animation_gnu << "}" << endl;
             out.open("out/" + filename);
             log("printing em clusters to " + filename);
             print_clusters(out, out_eighen, control.get_clusters(control.em_index));
             print_em_ellipses(out_gnu, out_em_data, filename_em_data);
+            print_em_animation(out_animation_gnu, out_em_animation_data, filename_em_animation_data);
+            
         }
         if (s == "print_spanning_tree") {
             string filename;
@@ -235,12 +254,21 @@ void Interface::print_spanning_tree(ofstream &out, pair<vector<vector<double>>, 
 }
 
 void Interface::print_em_ellipses(ofstream& out_gnu, ofstream& out_em_data, string filename_em_data) {
-    pair<int, pair<vector<pair<Point, double>>, vector<Point>>> data = control.get_em_data();
+    pair<int, EM_step_data> data = control.get_em_data();
     for (int i = 0; i < data.first; ++i) {
-        out_em_data << data.second.second[i].x << " " << data.second.second[i].y << " " << data.second.first[i].first.x << " " << data.second.first[i].first.y << " "
-         << data.second.first[i].second << endl;
+        //out_em_data << data.second.second[i].x << " " << data.second.second[i].y << " " << data.second.first[i].first.x << " " << data.second.first[i].first.y << " "
+         //<< data.second.first[i].second << " " << i << endl;
+        out_em_data << data.second.centers[i].x << " " << data.second.centers[i].y << " " << data.second.diams[i].x << " " << data.second.diams[i].y << " " << data.second.angles[i] << " " << i << endl;
     }
-    out_gnu << "plot '" + filename_em_data + "' using 1:2:3:4:5 with ellipses";
+}
+
+void Interface::print_em_animation(ofstream& out_gnu, ofstream& out_em_animation_data, string filename_em_animation_data) {
+    pair<int, vector<EM_step_data>> data = control.get_em_animation_data();
+    for (int i = 0; i < data.second.size(); ++i) {
+        for (int j = 0; j < data.first; ++j) {
+            out_em_animation_data << data.second[i].centers[j].x << " " << data.second[i].centers[j].y << " " << data.second[i].diams[j].x << " " << data.second[i].diams[j].y << " " << data.second[i].angles[j] << " " << j << endl;
+        }
+    }
 }
 
 void Interface::print_distances(vector<vector<double>> g, ofstream& out) {
