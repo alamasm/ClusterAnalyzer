@@ -1,10 +1,5 @@
-//create_group 100 50 -50 50 200
-//create_group 100 0 0 50 200
-//create_group 100 50 0 50 200
-//create_group 100 25 -10 50 50
-//rotate_center 0 1.57
-//rotate_center 2 0.79
-read_points -1
-find_clusters_em 4
-print_clusters_em clusters_em_4.txt
+create_group 100 0 0 50 200
+create_group 100 0 100 50 200
+find_clusters_forel 30
+print_clusters clusters_forel_30.txt 0
 end

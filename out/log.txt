@@ -1,5 +1,6 @@
-reading points from save/points_save.txt
-finding clusters with EM-Algorithm and k = 4
-printing em clusters to clusters_em_4.txt
+creating group with n = 100 x0 = 0.000000 y0 = 0.000000 x_disp = 50.000000 y_disp = 200.000000
+creating group with n = 100 x0 = 0.000000 y0 = 100.000000 x_disp = 50.000000 y_disp = 200.000000
+finding clusters with FOREL algorithm and R = 30.000000
+printing clusters to clusters_forel_30.txt
 saving points to save/points_save.txt
 ending...

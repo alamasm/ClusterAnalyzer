@@ -1,13 +1,131 @@
 #include <iostream>
+#include <sstream>
 #include "Interface.h"
+#include <string>
+#include <string.h>
 
 using namespace std;
 
-Interface::Interface(Control control) : out("out/points.txt"), log_out("out/log.txt"){
+void writeToClient(int clientSocket, stringstream& strOut, Interface* interface) {
+	string msg = strOut.str();
+    interface->log("TO " + to_string(clientSocket) + " - " + msg);
+	send(clientSocket, msg.c_str(), msg.size() + 1, 0);
+	strOut.str("");
+}
+
+class Server {
+	private:
+		string ipAddress;
+		int port;
+		Control c;
+        Interface* interface;
+
+		int createSocket() {
+			int sock = socket (AF_INET, SOCK_STREAM, 0);
+			if (sock < 0) {
+				cerr << "Server: cannot create socket" << endl;
+        		return -1;
+			}
+			struct sockaddr_in addr;
+		    addr.sin_family = AF_INET;
+		    addr.sin_port = htons(port);
+		    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+		    int err = bind(sock,(struct sockaddr*)&addr,sizeof(addr));
+		    if (err < 0) {
+		    	cerr << "Server: cannot bind socket" << endl;
+        		return -1;
+		    }
+		    // Создаем очередь на 3 входящих запроса соединения
+		    err = listen(sock,3);
+		    if (err < 0) {
+		        cerr << "Server: listen queue failure" << endl;
+		        return -1;
+		    }
+		    return sock;
+		}
+
+	public:
+		Server(string ip, int prt, Interface* interface) : ipAddress(ip), port(prt), interface(interface) {}
+
+		void run() {
+			char buf[4096];
+			sockaddr_in  client;
+			socklen_t  size;
+
+			int sock = createSocket();
+			if (sock < 0) {
+		    	return;
+		    }
+		    pollfd  act_set[100];
+		    act_set[0].fd = sock;
+		    act_set[0].events = POLLIN;
+		    act_set[0].revents = 0;
+		    int num_set = 1;
+
+	    	while(true) {
+	    		// Проверим, не появились ли данные в каком-либо сокете.
+		        // В нашем варианте ждем до фактического появления данных.
+		        int ret = poll (act_set, num_set, -1);
+		        if (ret < 0) {
+		            cerr << "Server: poll  failure" << endl;
+		            break;
+		        }
+		        if (ret > 0) {
+		        	for (int i = 0; i < num_set; i++) {
+		        		if (act_set[i].revents & POLLIN) {
+		        			cout << "get POLLIN at fd" << act_set[i].fd << endl;
+		        			act_set[i].revents &= ~POLLIN;
+		        			// Новое подключение
+		        			if (i == 0) {
+		        				int new_sock = accept(act_set[i].fd,(struct sockaddr*)&client,&size);
+		        				cout << "new client at port" <<  ntohs(client.sin_port) << endl;
+		        				if (num_set < 100) {
+		        					act_set[num_set].fd = new_sock;
+		        					act_set[num_set].events = POLLIN;
+		        					act_set[num_set].revents = 0;
+		        					num_set++;
+		        				} 
+		        				else {
+		        					cout << "no more sockets for client" << endl;
+		        					close(new_sock);
+		        				}
+		        			}
+		        			else {
+		                   		// пришли данные в уже существующем соединени
+		                   		int nbytes = recv(act_set[i].fd, buf, 65536, 0);
+                                cout << "RECIEVING" << endl;
+		                   		//c.identify(act_set[i].fd, string(buf));
+                                   cout << "first char: " << buf[0] << endl;
+                                interface->parse(string(buf));
+                                cout << "PARSED" << endl;
+                                stringstream res;
+                                res << "OK";
+                                writeToClient(act_set[i].fd, res, interface);
+                                cout << "SENT" << endl;
+		                        if (nbytes <= 0) { // ошибка или конец данных
+		                      		cout << "get stop" << endl;
+		                      		close (act_set[i].fd);
+		                      		if (i < num_set-1) {
+		                      			act_set[i] = act_set[num_set - 1];
+		                      			num_set--;
+		                      			i--;
+		                      		}
+		                      	}
+							}  
+						}
+	           		}
+    			}
+	    	}
+		}
+};	
+
+Interface::Interface(Control control) : out("out/points.txt"), log_out("out/server_log.txt"){
     this->control = control;
 }
 
 void Interface::start() {
+    /*
     cout << "Read commands from file 1 from konsole 0:" << endl;
     cin >> from_file;
     if (from_file) {
@@ -23,19 +141,28 @@ void Interface::start() {
         cout << "Enter commands here:" << endl;
     }
     parse();
+    */
+   Server my_server("127.0.0.1", 5555, this);
+	my_server.run();
 }
 
-void Interface::parse() {
+void Interface::parse(string userInput) {
+    //char buf[4096];
+    //string user;
+    cout << userInput << endl;
     istream* in;
     string s;
-    if (from_file) {
-        in = &input;
-    } else {
-        in = &cin;
-    }
-    while (1) {
+    //if (from_file) {
+    //    in = &input;
+    //} else {
+    //    in = &cin;
+    //}
+    istringstream iss(userInput);
+    in = &iss;
+    //while (1) {
         *in >> s;
-        if (s.find_first_of("//") == 0) continue;
+        
+        if (s.find_first_of("//") == 0) return;
         if (s == "end") {
             print_result(out);
             if (!points_saved) {
@@ -47,7 +174,7 @@ void Interface::parse() {
             log("ending...");
             log_out.close();
             out.close();
-            break;
+            return;
         }
         if (s == "create_group") {
             int n;
@@ -241,7 +368,7 @@ void Interface::parse() {
             points_save.close();
             points_saved = 1;
         }
-    }
+    //}
 }
 
 void Interface::print_spanning_tree(ofstream &out, pair<vector<vector<double>>, vector<Point>> g) {

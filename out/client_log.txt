@@ -1,0 +1,2 @@
+started client
+Reading commands from console
