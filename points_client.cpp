@@ -86,8 +86,7 @@ int main() {
             return 0;
         }
         else {
-            cout << "SENDING" << endl;
-            userInput = "asdfasfd";
+            log("sending request: " + userInput, log_out);
             cout << userInput.c_str() << endl;
             int sendRes = send(sock, userInput.c_str(), userInput.size() + 1, 0);
             if (sendRes == -1)
