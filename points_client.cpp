@@ -17,12 +17,17 @@ void log(string s, ofstream& log_out) {
     log_out << s << endl;
 }
 
-int main() {
-
-
+int main(int argc, char *argv[]) {
+    string log_filename = "out/client_";
+    if (argc >= 1) {
+        log_filename += string(argv[1]) + "_log.txt";
+    } else {
+        log_filename += "0_log.txt";
+    }
+    cout << "FILENAME " << log_filename << endl;
     ofstream log_out;
     ifstream in_file;
-    log_out.open("out/client_log.txt");
+    log_out.open(log_filename);
     log("started client", log_out);
 
 
